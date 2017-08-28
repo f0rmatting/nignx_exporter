@@ -10,6 +10,7 @@ import (
     "github.com/prometheus/common/expfmt"
     "github.com/gjflsl/nginx_exporter/ngx_status_exporter"
     req_status_exporter "github.com/gjflsl/nginx_exporter/req_status_exporter"
+    "github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -17,6 +18,8 @@ const (
 )
 
 var (
+    VERSION = "1.0.1"
+
     listeningAddress = flag.String("telemetry.address", ":9113", "Address on which to expose metrics.")
     metricsEndpoint  = flag.String("telemetry.endpoint", "/metrics", "Path under which to expose metrics.")
 )
@@ -25,7 +28,8 @@ func main() {
     flag.Parse()
 
     log.Printf("Starting Server: %s", *listeningAddress)
-    http.Handle(*metricsEndpoint, prometheus.Handler())
+    log.Printf("Nginx Exporter %s started.", VERSION)
+    http.Handle(*metricsEndpoint, promhttp.Handler())
     http.HandleFunc("/probe", func(w http.ResponseWriter, r *http.Request) {
         params := r.URL.Query()
 
